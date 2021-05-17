@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "EngineMinimal.h"
+#include "ArenaBattle.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/RotatingMovementComponent.h"
 #include "Fountain.generated.h" // UE Object 클래스를 위한 부분
+
 
 UCLASS() // UE Object 클래스를 위한 부분
 class ARENABATTLE_API AFountain : public AActor // UE Object 클래스를 위한 부분
@@ -18,6 +20,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
+	virtual void PostInitializeComponents() override;
 
 public:	
 	// Called every frame
@@ -38,4 +42,11 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="ID")
 	int32 ID;
+
+	UPROPERTY(VisibleAnywhere)
+	URotatingMovementComponent* Movement;
+
+private:
+	UPROPERTY(EditAnywhere, Category="Stat", meta=(AllowPrivateAccess = true))
+	float RotateSpeed;
 };
