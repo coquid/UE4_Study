@@ -57,9 +57,6 @@ void AFountain::BeginPlay()
 
 	ABLOG_S(Warning);
 	ABLOG(Warning, TEXT("Actor name : %s, Id : %d, loc x : %.3f"), *GetName(), ID, GetActorLocation().X);
-	
-	bool myBool = false;
-	ensure(myBool);
 }
 
 void AFountain::EndPlay(const EEndPlayReason::Type endPlayReason)
