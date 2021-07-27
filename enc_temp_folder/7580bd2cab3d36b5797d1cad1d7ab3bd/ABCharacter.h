@@ -36,8 +36,6 @@ protected:
 	float ArmLengthSpeed = 0.0f;
 	float ArmRotationSpeed = 0.0f;
 public:	
-	virtual void PostInitializeComponents() override;
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -57,14 +55,4 @@ private:
 	void Turn(float NewAxisValue);
 	
 	void ViewChange();
-	void Attack();
-
-	UFUNCTION()
-	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-private:
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Attack, Meta=(AllowPrivateAccess = true))
-	bool IsAttacking;
-
-	UPROPERTY()
-	class UABAnimInstance* ABAnim;
 };
