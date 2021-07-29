@@ -3,6 +3,7 @@
 
 #include "ABCharacter.h"
 #include "ABAnimInstance.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -46,6 +47,12 @@ AABCharacter::AABCharacter()
 	IsAttacking = false;
 	MaxCombo = 4;
 	AttackEndComboState();
+
+	AttackRange = 200.0f;
+	AttackRadius = 50.0f;
+
+	// 프리셋 지정.
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("ABCharacter"));
 }
 
 // Called when the game starts or when spawned
@@ -115,7 +122,7 @@ void AABCharacter::PostInitializeComponents()
 		}
 		});
 
-
+	ABAnim->OnAttackHitCheck.AddUObject(this, &AABCharacter::AttackCheck);
 }
 
 // Called every frame
@@ -150,6 +157,19 @@ void AABCharacter::Tick(float DeltaTime)
 	default:
 		break;
 	}
+}
+
+float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	ABLOG(Warning, TEXT("Actor : %s took damage : %f"), *GetName(), FinalDamage);
+
+	if (FinalDamage > 0.0f)
+	{
+		ABAnim->SetDeadAnim(); // 죽는 anim 재생.
+		SetActorEnableCollision(false); // 죽으면 collision 끔.
+	}
+	return FinalDamage;
 }
 
 // Called to bind functionality to input
@@ -290,4 +310,46 @@ void AABCharacter::AttackEndComboState()
 	IsComboInputOn = false;
 	CanNextCombo = false;
 	CurrentCombo = 0;
+}
+
+void AABCharacter::AttackCheck()
+{
+	FHitResult hitResult;
+	FCollisionQueryParams Params(NAME_None, false, this); // this 를 넣어서 ignore 옵션을 지정. 자기 자신은 체크되면 안되서.
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		hitResult
+		, GetActorLocation()
+		, GetActorLocation() + GetActorForwardVector() * AttackRange
+		, FQuat::Identity
+		, ECollisionChannel::ECC_GameTraceChannel2
+		, FCollisionShape::MakeSphere(AttackRadius), Params);
+
+#if ENABLE_DRAW_DEBUG
+	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+	float DebufLifeTime = 5.0f;
+
+	DrawDebugCapsule(GetWorld()
+		, Center
+		, HalfHeight
+		, AttackRadius
+		, CapsuleRot
+		, DrawColor
+		, false
+		, DebufLifeTime);
+#endif
+
+
+	if (bResult)
+	{
+		ABLOG(Warning, TEXT("Hit actor name = %s"), *hitResult.Actor->GetName());
+
+		FDamageEvent DamageEvent;
+		hitResult.Actor->TakeDamage(50.0f, DamageEvent, GetController(), this);
+	}
+
+
 }
