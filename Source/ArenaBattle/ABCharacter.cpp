@@ -4,6 +4,7 @@
 #include "ABCharacter.h"
 #include "ABAnimInstance.h"
 #include "DrawDebugHelpers.h"
+#include "ABWeapon.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -53,6 +54,8 @@ AABCharacter::AABCharacter()
 
 	// 프리셋 지정.
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("ABCharacter"));
+
+
 }
 
 // Called when the game starts or when spawned
@@ -60,6 +63,15 @@ void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//FName WeaponSoket(TEXT("hand_rSocket"));
+	//if (GetMesh()->DoesSocketExist(WeaponSoket))
+	//{
+	//	auto CurWeapon = GetWorld()->SpawnActor<AABWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	//	if (CurWeapon != nullptr)
+	//	{
+	//		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSoket);
+	//	}
+	//}
 }
 
 void AABCharacter::SetControlMode(AABCharacter::EControlMode ControlMode)
@@ -185,6 +197,23 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("ViewChange"), EInputEvent::IE_Pressed, this, &AABCharacter::ViewChange);
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AABCharacter::Attack);
+}
+
+bool AABCharacter::CanSetWeapon()
+{
+	return (CurrentWeapon == nullptr);
+}
+
+void AABCharacter::SetWeapon(AABWeapon* NewWeapon)
+{
+	ABCHECK(NewWeapon != nullptr && CurrentWeapon == nullptr);
+	FName WeaponSocket = TEXT("hand_rSocket");
+	if (NewWeapon != nullptr)
+	{
+		NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+		NewWeapon->SetOwner(this);
+		CurrentWeapon = NewWeapon;
+	}
 }
 
 void AABCharacter::UpDown(float NewAxisAvlue)
