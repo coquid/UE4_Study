@@ -40,6 +40,7 @@ void UABCharacterStatComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 	SetNewLevel(Level);
+	ABCHECK(CurrentStatData != nullptr);
 	SetHP(CurrentStatData->MaxHp);
 }
 

@@ -25,6 +25,7 @@ protected:
 	{
 		GTA = 0,
 		DIABLO,
+		NPC,
 	};
 
 	void SetControlMode(EControlMode controlMode);
@@ -41,6 +42,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void PossessedBy(AController* NewController);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
