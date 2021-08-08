@@ -46,6 +46,8 @@ private:
 
 	void OnNPCSpawn();
 
+	UFUNCTION()
+	void OnKeyNpcDestroyed(AActor* DestroyedActor);
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))

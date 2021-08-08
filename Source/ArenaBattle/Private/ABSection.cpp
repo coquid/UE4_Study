@@ -4,6 +4,8 @@
 #include "ABSection.h"
 #include "ABCharacter.h"
 #include "ABItemBox.h"
+#include "ABPlayerController.h"
+#include "ABGameMode.h"
 
 // Sets default values
 AABSection::AABSection()
@@ -163,5 +165,25 @@ void AABSection::OnGateTriggerBeginOverlap(UPrimitiveComponent* overlappedCompon
 
 void AABSection::OnNPCSpawn()
 {
-	GetWorld()->SpawnActor<AABCharacter>(GetActorLocation() + FVector::UpVector * 88.0f, FRotator::ZeroRotator);
+	GetWorld()->GetTimerManager().ClearTimer(SpawnNPCTimerHandler);
+	auto keyNpc = GetWorld()->SpawnActor<AABCharacter>(GetActorLocation() + FVector::UpVector * 88.0f, FRotator::ZeroRotator);
+	if (keyNpc != nullptr)
+	{
+		keyNpc->OnDestroyed.AddDynamic(this, &AABSection::OnKeyNpcDestroyed);
+	}
+}
+
+void AABSection::OnKeyNpcDestroyed(AActor* DestroyedActor)
+{
+	auto ABCharacter = Cast<AABCharacter>(DestroyedActor);
+	ABCHECK(ABCharacter != nullptr);
+
+	auto ABPlayerController = Cast<AABPlayerController>(ABCharacter->LastHitBy);
+	ABCHECK(ABPlayerController != nullptr);
+
+	auto ABGameMode = Cast<AABGameMode>(GetWorld()->GetAuthGameMode());
+	ABCHECK(ABGameMode != nullptr);
+	ABGameMode->AddScore(ABPlayerController);
+
+	SetState(ESectionState::COMPLETE);
 }
