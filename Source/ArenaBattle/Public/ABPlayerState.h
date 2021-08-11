@@ -24,6 +24,7 @@ public:
 	int32 GetGameHighScore() const { return GameHighScore; }
 	FString SaveSlotName = TEXT("Player1");
 	int32 GetCharacterLevel() const;
+	int32 GetCharacterIndex() const { return CharacterIndex; }
 	float GetExpRatio() const;
 	bool AddExp(int32 IncomeExp);
 	void AddGameScore();
@@ -45,6 +46,9 @@ protected:
 
 	UPROPERTY(Transient)
 	int32 Exp;
+
+	UPROPERTY(Transient)
+	int32 CharacterIndex = 0;
 
 private:
 	void SetCharacterLevel(int32 NewCharacterLevel);

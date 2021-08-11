@@ -5,7 +5,6 @@
 
 AABGameState::AABGameState()
 {
-	TotalGameScore = 0;
 }
 
 int32 AABGameState::GetTotalGameScore() const

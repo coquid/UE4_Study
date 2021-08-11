@@ -21,7 +21,13 @@ public:
 	int32 GetTotalGameScore() const;
 	void AddGameScore();
 
+	void SetGameCleared() { bGameCleared = true; }
+	bool IsGameCleared() const { return bGameCleared; }
+
 private:
 	UPROPERTY(Transient)
-	int32 TotalGameScore;
+	int32 TotalGameScore = 0;
+
+	UPROPERTY(Transient)
+	bool bGameCleared = false;
 };

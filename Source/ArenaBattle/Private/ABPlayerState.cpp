@@ -75,6 +75,7 @@ void AABPlayerState::InitPlayerData()
 	SetCharacterLevel(ABSaveGame->Level);
 	GameScore = 0;
 	GameHighScore = ABSaveGame->HighScore;
+	CharacterIndex = ABSaveGame->CharacterIndex;
 	Exp = ABSaveGame->Exp;
 	SavePlayerData();
 }
